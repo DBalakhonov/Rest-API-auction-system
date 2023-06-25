@@ -1,7 +1,8 @@
 package org.example.Controller;
-
-import jakarta.validation.constraints.Null;
+import jakarta.validation.Valid;
+import org.example.DTO.*;
 import org.example.Service.LotService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,37 +16,40 @@ public class LotController {
     public LotController(LotService lotService) {
         this.lotService = lotService;
     }
-
+    @GetMapping("/{id}/first")
+    public BidDTO getFirstBidder(@PathVariable int id){
+        return lotService.getFirstBidder(id);
+    }
+    @GetMapping("/{id}/frequent")
+    public BidDTO getFrequentBidder(@PathVariable int id){
+        return lotService.getFrequentBidder(id);
+    }
+    @GetMapping("/{id}")
+    public FullLot getFullLot(@PathVariable int id){
+        return lotService.getFullLot(id);
+    }
+    @PostMapping("/{id}/start")
+    public void startLot(@PathVariable int id){
+        lotService.startLot(id);
+    }
+   @PostMapping("/{id}/bid")
+    public void createBid(@PathVariable int id,@RequestBody @Valid Bidder bidder){
+        lotService.createBid(bidder);
+   }
+    @PostMapping("/{id}/stop")
+    public void stopLot(@PathVariable int id){
+        lotService.stopLot(id);
+    }
+    @PostMapping
+    public Status.LotDTO createLot(@RequestBody @Valid CreateLot createLot){
+        return lotService.createLot(createLot);
+    }
     @GetMapping
-    public List<Null> allLots(){
-    return null;
-}
-@PostMapping
-    public String createLot(){
-    return "1";
-}
-@GetMapping("/{id}")
-    public Null lotById(@PathVariable int id){
-    return null;
-}
-@PostMapping("/{id}/start")
-    public String startLot(@PathVariable int id){
-    return null;
-}
-@PostMapping("/{id}/bid")
-    public String bidLot(@PathVariable int id){
-    return null;
-}
-@PostMapping("/{id}/stop")
-    public String stopLot(@PathVariable int id){
-    return null;
-}
-@GetMapping("/{id}/first")
-    public Null nameFirstBidOnLot(@PathVariable int id){
-    return null;
-}
-@GetMapping("/{id}/frequent")
-    public Null frequentBidName(@PathVariable int id){
-    return null;
-}
+    public List<Status.LotDTO> findLots(@RequestParam String status , int page){
+        return lotService.findLots(status,page);
+    }
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> getCSVFile(){
+        return null;
+    }
 }
