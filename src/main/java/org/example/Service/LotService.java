@@ -7,6 +7,8 @@ import org.example.Repository.BidRepository;
 import org.example.Repository.LotRepository;
 import org.example.exception.LotNotFoundException;
 import org.example.mapper.LotMapper;
+
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,7 @@ public class LotService {
     }
 
     public FullLot getFullLot(int lotId) {
-        Status.LotDTO a = lotRepository.findFirstByLot_Id(lotId)
+        LotDTO a = lotRepository.findFirstByLot_Id(lotId)
                 .map(lotMapper::lotDTO)
                 .orElseThrow(LotNotFoundException::new);
         BidDTO b = bidRepository.findFirstByLot_IdOrderByDateTimeDesc(lotId)
@@ -59,7 +61,7 @@ public class LotService {
     }
 
     public void startLot(int lotId) {
-        Status.LotDTO a = lotRepository.findFirstByLot_Id(lotId)
+        LotDTO a = lotRepository.findFirstByLot_Id(lotId)
                 .map(lotMapper::lotDTO)
                 .orElseThrow(LotNotFoundException::new);
         if (a.getStatus()== Status.CREATED){
@@ -76,7 +78,7 @@ public class LotService {
     }
 
     public void stopLot(int lotId) {
-        Status.LotDTO lotDTO = lotRepository.findFirstByLot_Id(lotId)
+        LotDTO lotDTO = lotRepository.findFirstByLot_Id(lotId)
                 .map(lotMapper::lotDTO)
                 .orElseThrow(LotNotFoundException::new);
         if (lotDTO.getStatus()==Status.STARTED){
@@ -84,18 +86,18 @@ public class LotService {
         }
     }
 
-    public Status.LotDTO createLot(CreateLot createLot) {
+    public LotDTO createLot(CreateLot createLot) {
         Lot lot = lotMapper.createLotToLot(createLot);
         lotRepository.save(lot);
         return lotMapper.lotDTO(lot);
 
     }
 
-    public List<Status.LotDTO> findLots(String status, int page) {
-        List<Status.LotDTO> a = lotRepository.findLots(status)
+    public List<LotDTO> findLots(String status, int page) {
+        List<LotDTO> a = lotRepository.findLots(status)
                 .stream().map(lotMapper::lotDTO)
                 .collect(Collectors.toList());
-        List<Status.LotDTO> back = new ArrayList<>();
+        List<LotDTO> back = new ArrayList<>();
         if (page<0){
             return null;
         }
@@ -112,6 +114,29 @@ public class LotService {
                 }
             }
             return back;
+        }
+    }
+
+    public byte[] getCSVFile() {
+        List<Lot> lots = lotRepository.findAll();
+        for (int i = 0; i < lots.size(); i++) {
+            BidDTO bidDTO = bidRepository.findFirstByLot_IdOrderByDateTimeDesc(lots.get(i).getId())
+                    .map(lotMapper::bidDto)
+                    .orElseThrow(LotNotFoundException::new);
+            FullLot fullLot = getFullLot(lots.get(i).getId());
+            StringWriter sw = new StringWriter();
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                    .setHeader("id","title","status","lastBidder","currentPrice")
+                    .build();
+            try (CSVPrinter csvPrinter = new CSVPrinter(sw, csvFormat)) {
+                lots.forEach(lot -> csvPrinter.printRecord(lot.getId(),lot.getTitle(),lot.getStatus(),bidDTO.getBidderName(),fullLot.getCurrentPrice());
+                {catch (IOException e) {
+                    e.printStackTrace();
+                }
+                });
+        }
+
+
         }
     }
 }

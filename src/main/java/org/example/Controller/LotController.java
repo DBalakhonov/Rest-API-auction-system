@@ -2,6 +2,8 @@ package org.example.Controller;
 import jakarta.validation.Valid;
 import org.example.DTO.*;
 import org.example.Service.LotService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,15 +43,19 @@ public class LotController {
         lotService.stopLot(id);
     }
     @PostMapping
-    public Status.LotDTO createLot(@RequestBody @Valid CreateLot createLot){
+    public LotDTO createLot(@RequestBody @Valid CreateLot createLot){
         return lotService.createLot(createLot);
     }
     @GetMapping
-    public List<Status.LotDTO> findLots(@RequestParam String status , int page){
+    public List<LotDTO> findLots(@RequestParam String status , int page){
         return lotService.findLots(status,page);
     }
     @GetMapping("/export")
     public ResponseEntity<byte[]> getCSVFile(){
-        return null;
+        byte[] result = lotService.getCSVFile();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.CONTENT_TYPE,"text/csv")
+                .body(result);
     }
 }

@@ -13,8 +13,8 @@ public class LotMapper {
         bidDto.setBidderName(bid.getName());
         return bidDto;
     }
-    public Status.LotDTO lotDTO(Lot lot){
-        Status.LotDTO lotDTO = new Status.LotDTO();
+    public LotDTO lotDTO(Lot lot){
+        LotDTO lotDTO = new LotDTO();
         lotDTO.setId(lot.getId());
         lotDTO.setStatus(lot.getStatus());
         lotDTO.setDescription(lot.getDescription());
@@ -23,7 +23,7 @@ public class LotMapper {
         lotDTO.setBidPrice(lot.getBidPrice());
         return lotDTO;
     }
-    public Lot toLot(Status.LotDTO lotDTO){
+    public Lot toLot(LotDTO lotDTO){
         Lot lot = new Lot();
         lot.setId(lotDTO.getId());
         lot.setStatus(lotDTO.getStatus());
