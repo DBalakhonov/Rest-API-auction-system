@@ -2,24 +2,26 @@ package org.example.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.OffsetDateTime;
+
 @Entity
 @Table(name = "bids")
 public class Bid {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     @Column(length = 20, nullable = false)
     private String name;
+
+    @Column(name = "date_time", nullable = false)
+    private OffsetDateTime dateTime;
     @ManyToOne
     @JoinColumn(name = "lot_id")
     private Lot lot;
 
-    public int getId() {
-        return id;
+    public OffsetDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setDateTime(OffsetDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 
     public String getName() {

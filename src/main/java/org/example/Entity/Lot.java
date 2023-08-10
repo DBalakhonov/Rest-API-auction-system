@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.example.DTO.Status;
 
 @Entity
-@Table (name = "lot")
+@Table (name = "Lot")
 public class Lot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
